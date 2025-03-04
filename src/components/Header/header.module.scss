@@ -1,0 +1,16 @@
+header {
+  .header {
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem;
+
+    nav {
+      li {
+        &::marker {
+          display: none;
+        }
+      }
+    }
+  }
+}
