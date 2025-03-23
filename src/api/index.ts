@@ -1,13 +1,16 @@
 import axios, { AxiosInstance } from "axios";
 import authApi from "./authApi";
 import { handleError } from "../utils/handleError";
+import userApi from "./userApi";
+import serviceApi from "./serviceApi";
+import serviceVariantApi from "./serviceVariantApi";
+import bookingApi from "./bookingApi";
 
 let retryCount = 0;
-const createAxiosInstance = (
-  baseURL = process.env.REACT_APP_API_URL + "/api",
-  withAuth = false
-): AxiosInstance => {
-  const instance = axios.create({ baseURL });
+const createAxiosInstance = (baseURL = "", withAuth = false): AxiosInstance => {
+  const instance = axios.create({
+    baseURL: process.env.REACT_APP_API_URL + "/api" + baseURL,
+  });
 
   // Перехватчик запросов
   instance.interceptors.request.use(
@@ -70,10 +73,19 @@ const createAxiosInstance = (
   return instance;
 };
 
-const $host = createAxiosInstance(process.env.REACT_APP_API_URL + "/api");
-const $authHost = createAxiosInstance(
-  process.env.REACT_APP_API_URL + "/api",
-  true
-);
+const $host = createAxiosInstance("");
+const $authHost = createAxiosInstance("", true);
+const $userHost = createAxiosInstance("/users", true);
+const $serviceHost = createAxiosInstance("/service", true);
+const $serviceVariantHost = createAxiosInstance("/service", true);
+const $workingHoursHost = createAxiosInstance("/service", true);
 
-export { $host, $authHost };
+export {
+  $host,
+  $authHost,
+  $userHost,
+  $serviceHost,
+  $serviceVariantHost,
+  $workingHoursHost,
+};
+export { authApi, userApi, serviceApi, serviceVariantApi, bookingApi };
