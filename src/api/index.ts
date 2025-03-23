@@ -5,6 +5,7 @@ import userApi from "./userApi";
 import serviceApi from "./serviceApi";
 import serviceVariantApi from "./serviceVariantApi";
 import bookingApi from "./bookingApi";
+import workingHoursApi from "./workingHoursApi";
 
 let retryCount = 0;
 const createAxiosInstance = (baseURL = "", withAuth = true): AxiosInstance => {
@@ -78,6 +79,7 @@ const $userHost = createAxiosInstance("/users", true);
 const $serviceHost = createAxiosInstance("/service", true);
 const $serviceVariantHost = createAxiosInstance("/service/variants", true);
 const $workingHoursHost = createAxiosInstance("/service/working-hours", true);
+const $bookingHost = createAxiosInstance("/bookings", true);
 
 export {
   $authHost,
@@ -85,5 +87,13 @@ export {
   $serviceHost,
   $serviceVariantHost,
   $workingHoursHost,
+  $bookingHost,
 };
-export { authApi, userApi, serviceApi, serviceVariantApi, bookingApi };
+export {
+  authApi,
+  userApi,
+  serviceApi,
+  serviceVariantApi,
+  bookingApi,
+  workingHoursApi,
+};

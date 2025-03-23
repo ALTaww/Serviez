@@ -41,7 +41,7 @@ class WorkingHoursApi {
     variantId: string,
     workingHours: IWorkingHours["days"],
     signal: AbortSignal
-  ): Promise<IServiceVariant[]> => {
+  ): Promise<IServiceVariant> => {
     const { data } = await $serviceVariantHost.put(
       `/${variantId}`,
       workingHours,
@@ -53,7 +53,7 @@ class WorkingHoursApi {
   delete = async (
     variantId: string,
     signal: AbortSignal
-  ): Promise<IServiceVariant[]> => {
+  ): Promise<IServiceVariant> => {
     const { data } = await $serviceVariantHost.delete(`/${variantId}`, {
       signal,
     });
