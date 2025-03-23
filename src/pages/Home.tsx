@@ -1,5 +1,5 @@
 import React from "react";
-import { CreateServiceForm } from "../components";
+import { CreateServiceForm, Login } from "../components";
 
 const Home = () => {
   return (
@@ -15,7 +15,9 @@ const Home = () => {
         <h2>О нас</h2>
         <CreateServiceForm />
       </div>
-      <div className="action-view"></div>
+      <div className="action-view">
+        <Login />
+      </div>
     </div>
   );
 };

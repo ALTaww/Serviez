@@ -1,44 +1,88 @@
 import { Button, Checkbox, Group, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import React from "react";
+import React, { FormEvent, useState } from "react";
+import { Link } from "react-router-dom";
+import Register from "./Register";
+import userStore from "../../store/userStore";
+import { observer } from "mobx-react-lite";
 
 const Login = () => {
+  const [isRegistered, setIsRegistered] = useState(true);
   const form = useForm({
     mode: "uncontrolled",
     initialValues: {
       email: "",
+      password: "",
       termsOfService: false,
     },
 
     validate: {
       email: (value) => (/^\S+@\S+$/.test(value) ? null : "Invalid email"),
+      password: (value) =>
+        value.length >= 8 ? null : "Пароль должен быть не менее 8 символов",
     },
   });
 
+  const handleLoginSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const { email, password } = form.values;
+  };
+
+  if (userStore.isAuth) {
+    return null;
+  }
+
   return (
     <section className="login-component">
-      <form>
-        <TextInput
-          withAsterisk
-          label="Email"
-          placeholder="your@email.com"
-          key={form.key("email")}
-          {...form.getInputProps("email")}
-        />
-
-        <Checkbox
-          mt="md"
-          label="I agree to sell my privacy"
-          key={form.key("termsOfService")}
-          {...form.getInputProps("termsOfService", { type: "checkbox" })}
-        />
-
-        <Group justify="flex-end" mt="md">
-          <Button type="submit">Submit</Button>
-        </Group>
-      </form>
+      {isRegistered ? (
+        <form onSubmit={handleLoginSubmit}>
+          <h2>Войти на сайт</h2>
+          <TextInput
+            withAsterisk
+            label="Email"
+            placeholder="your@email.com"
+            key={form.key("email")}
+            {...form.getInputProps("email")}
+          />
+          <TextInput
+            withAsterisk
+            label="Пароль"
+            placeholder="somePassword814#$!"
+            key={form.key("password")}
+            {...form.getInputProps("password")}
+          />
+          <Checkbox
+            mt="md"
+            label="I agree to sell my privacy"
+            key={form.key("termsOfService")}
+            {...form.getInputProps("termsOfService", { type: "checkbox" })}
+          />
+          <Group justify="flex-end" mt="md">
+            <Button type="submit">Submit</Button>
+          </Group>
+        </form>
+      ) : (
+        <Register />
+      )}
+      <div className="center">
+        {isRegistered ? (
+          <p>
+            Нет аккаунта?{" "}
+            <Link to="#" onClick={() => setIsRegistered(false)} role="button">
+              Зарегистрироваться
+            </Link>
+          </p>
+        ) : (
+          <p>
+            Есть аккаунт?{" "}
+            <Link to="#" onClick={() => setIsRegistered(true)} role="button">
+              Войти
+            </Link>
+          </p>
+        )}
+      </div>
     </section>
   );
 };
 
-export default Login;
+export default observer(Login);

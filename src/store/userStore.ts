@@ -1,9 +1,9 @@
 import { makeAutoObservable } from "mobx";
-import { IUsers } from "../types/database";
+import { IUser } from "../types/database";
 
 class UserStore {
   isAuth = false;
-  data: IUsers | null = null;
+  data: IUser | null = null;
 
   constructor() {
     makeAutoObservable(this);
@@ -12,7 +12,7 @@ class UserStore {
   setIsAuth(bool: boolean) {
     this.isAuth = bool;
   }
-  setData(data: IUsers | null) {
+  setData(data: IUser | null) {
     this.data = data;
   }
 }
