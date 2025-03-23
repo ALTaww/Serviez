@@ -76,8 +76,8 @@ const createAxiosInstance = (baseURL = "", withAuth = true): AxiosInstance => {
 const $authHost = createAxiosInstance("/auth", true);
 const $userHost = createAxiosInstance("/users", true);
 const $serviceHost = createAxiosInstance("/service", true);
-const $serviceVariantHost = createAxiosInstance("/service", true);
-const $workingHoursHost = createAxiosInstance("/service", true);
+const $serviceVariantHost = createAxiosInstance("/service/variants", true);
+const $workingHoursHost = createAxiosInstance("/service/working-hours", true);
 
 export {
   $authHost,
