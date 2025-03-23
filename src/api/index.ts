@@ -7,7 +7,7 @@ import serviceVariantApi from "./serviceVariantApi";
 import bookingApi from "./bookingApi";
 
 let retryCount = 0;
-const createAxiosInstance = (baseURL = "", withAuth = false): AxiosInstance => {
+const createAxiosInstance = (baseURL = "", withAuth = true): AxiosInstance => {
   const instance = axios.create({
     baseURL: process.env.REACT_APP_API_URL + "/api" + baseURL,
   });
