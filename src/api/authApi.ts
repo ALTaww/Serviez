@@ -1,4 +1,4 @@
-import { $authHost, $host } from ".";
+import { $authHost } from ".";
 
 class AuthApi {
   refreshTokens = async (signal?: AbortSignal) => {
@@ -7,7 +7,7 @@ class AuthApi {
   };
 
   login = async (email: string, password: string, signal: AbortSignal) => {
-    const { data } = await $host.post(
+    const { data } = await $authHost.post(
       "/login",
       { email, password },
       { signal }
@@ -29,7 +29,7 @@ class AuthApi {
     }: { name: string; surname: string; email: string; password: string },
     signal: AbortSignal
   ) => {
-    const { data } = await $host.post(
+    const { data } = await $authHost.post(
       "/register",
       { name, surname, email, password },
       { signal }
@@ -38,12 +38,12 @@ class AuthApi {
   };
 
   sendCode = async (email: string, signal: AbortSignal) => {
-    const { data } = await $host.post("/send-code", { email }, { signal });
+    const { data } = await $authHost.post("/send-code", { email }, { signal });
     return data;
   };
 
   verifyCode = async (email: string, code: string, signal: AbortSignal) => {
-    const { data } = await $host.post(
+    const { data } = await $authHost.post(
       "/verify-code",
       { email, code },
       { signal }
