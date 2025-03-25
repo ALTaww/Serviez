@@ -3,6 +3,7 @@ import { ColorSchemeIcons } from "../../templates";
 import styles from "./header.module.scss";
 import { paths } from "../../paths";
 import LogoutButton from "../../templates/LogoutButton";
+import ChangeRole from "../../templates/ChangeRole";
 
 const Header = () => {
   return (
@@ -23,6 +24,7 @@ const Header = () => {
           </ul>
         </nav>
         <LogoutButton />
+        <ChangeRole />
         <ColorSchemeIcons />
       </div>
     </header>

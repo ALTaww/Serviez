@@ -11,11 +11,15 @@ import { useForm } from "@mantine/form";
 import { IService, IServiceVariant } from "../../types/database";
 import { serviceApi, serviceVariantApi } from "../../api";
 import { createNewAbortController } from "../../utils/createNewAbortController";
+import { SERVICE_VARIANT_CREATE } from "../../types/types";
 
 const CreateServiceForm = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [serviceData, setServiceData] = useState<IService | null>(null);
   const [variantsData, setVariantsData] = useState<IServiceVariant[]>([]);
+  const [variantsCreateData, setVariantsCreateData] = useState<
+    SERVICE_VARIANT_CREATE[]
+  >([]);
   const abortControllerRef = useRef<AbortController>(null);
 
   const serviceInitialValues: Omit<
@@ -27,9 +31,11 @@ const CreateServiceForm = () => {
     category: "",
   };
 
+  // СДЕЛАТЬ controlled !!!!
   const serviceForm = useForm({
     mode: "uncontrolled",
     initialValues: serviceInitialValues,
+    validateInputOnBlur: true,
 
     validate: (values) => {
       return {
@@ -49,10 +55,7 @@ const CreateServiceForm = () => {
     },
   });
 
-  const variantInitialValues: Omit<
-    IServiceVariant,
-    "_id" | "employee" | "service"
-  > = {
+  const variantInitialValues: SERVICE_VARIANT_CREATE = {
     title: "",
     description: "",
     price: 0,
@@ -80,45 +83,58 @@ const CreateServiceForm = () => {
     },
   });
 
+  // ОБРАБОТАТЬ НУЛИ В ДЛИНЕ МАССИВА
   const nextStep = async () => {
     if (serviceForm.validate().hasErrors) return;
-    if (variantForm.validate().hasErrors) return;
 
     const { controller, signal } = createNewAbortController(abortControllerRef);
     abortControllerRef.current = controller;
 
     if (activeStep === 0) {
       const service = await serviceApi.createService(
-        serviceForm.values,
+        serviceForm.getValues(),
         signal
       );
       setServiceData(service);
     } else if (activeStep === 1) {
+      if (variantForm.validate().hasErrors) return;
+
       if (!serviceData) {
         console.log("no serviceData saved in 1 step");
         return;
       }
-      // for (let )
-      const variant = await serviceVariantApi.create(
-        serviceData._id,
-        variantForm.values,
-        signal
-      );
+
+      console.log(variantsCreateData, variantsData);
+      // ТУТ НОРМАЛЬНО ОБРАБОТАТЬ СЕТТИНГ!!! (НЕ СЕТТИТЬ ВООБЩЕ, А СДЕЛАТЬ ОТДЕЛЬНЫЙ ЗАПРОС)
+      setVariantsCreateData((data) => [...data, variantForm.getValues()]);
+      for (let i = 0; i < variantsCreateData.length; i++) {
+        const variant = await serviceVariantApi.create(
+          serviceData._id,
+          variantsCreateData[i],
+          signal
+        );
+        setVariantsData((data) => [...data, variant]);
+      }
+      setVariantsCreateData([]);
     }
 
     setActiveStep((current) => {
-      if (
-        serviceForm.validate().hasErrors ||
-        variantForm.validate().hasErrors
-      ) {
-        return current;
-      }
       return current < 3 ? current + 1 : current;
     });
   };
 
   const prevStep = () =>
     setActiveStep((current) => (current > 0 ? current - 1 : current));
+
+  const addOneMoreVariant = () => {
+    setVariantsCreateData((data) => [...data, variantForm.getValues()]);
+    variantForm.reset();
+  };
+
+  const removeVariant = () => {
+    variantForm.setValues(variantsCreateData[variantsCreateData.length - 1]);
+    setVariantsCreateData((data) => data.slice(0, -1));
+  };
 
   return (
     <>
@@ -175,7 +191,16 @@ const CreateServiceForm = () => {
             key={variantForm.key("price")}
             {...variantForm.getInputProps("price")}
           />
-          <Button>Создать ещё вариант услуги</Button>
+          {variantsCreateData.length >= 1 && (
+            <Button mr="md" onClick={removeVariant}>
+              Не создавать вариант услуги
+            </Button>
+          )}
+          {variantsCreateData.length < 10 && (
+            <Button onClick={addOneMoreVariant}>
+              Создать ещё вариант услуги
+            </Button>
+          )}
         </Stepper.Step>
 
         <Stepper.Step label="Последний шаг" description="Часы работы">

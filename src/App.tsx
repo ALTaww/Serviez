@@ -11,6 +11,7 @@ import { observer } from "mobx-react-lite";
 
 function App() {
   useEffect(() => {
+    if (userStore.isAuth) return;
     (async () => {
       const controller = new AbortController();
       const signal = controller.signal;

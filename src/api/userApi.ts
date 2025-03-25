@@ -20,8 +20,8 @@ class UserApi {
     newEmail: string,
     signal: AbortSignal
   ): Promise<IUser[]> => {
-    const { data } = await $userHost.post(
-      `/change-email`,
+    const { data } = await $userHost.patch(
+      `/email`,
       { newEmail },
       {
         signal,
@@ -35,9 +35,20 @@ class UserApi {
     newPassword: string,
     signal: AbortSignal
   ): Promise<IUser[]> => {
-    const { data } = await $userHost.post(
-      `/change-password`,
+    const { data } = await $userHost.patch(
+      `/password`,
       { oldPassword, newPassword },
+      {
+        signal,
+      }
+    );
+    return data;
+  };
+
+  changeRole = async (role: string, signal: AbortSignal): Promise<IUser[]> => {
+    const { data } = await $userHost.patch(
+      `/role`,
+      { role },
       {
         signal,
       }
