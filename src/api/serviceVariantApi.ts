@@ -4,7 +4,7 @@ import { IServiceVariant, IWorkingHours } from "../types/database";
 class ServiceVariantApi {
   create = async (
     serviceId: string,
-    variant: Omit<IServiceVariant, "_id" | "service">,
+    variant: Omit<IServiceVariant, "_id" | "service" | "employee">,
     signal: AbortSignal
   ): Promise<IServiceVariant> => {
     const { data } = await $serviceVariantHost.post(

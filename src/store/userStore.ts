@@ -15,6 +15,16 @@ class UserStore {
   setData(data: IUser | null) {
     this.data = data;
   }
+
+  login(data: IUser) {
+    this.data = data;
+    this.isAuth = true;
+  }
+
+  logout() {
+    this.data = null;
+    this.isAuth = false;
+  }
 }
 
 const userStore = new UserStore();

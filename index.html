@@ -57,7 +57,14 @@
     <!-- Безопасность и политики -->
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self' https: 'unsafe-inline' 'unsafe-eval';"
+      content="
+      default-src 'self' http://localhost:5173;
+      script-src 'self' 'unsafe-inline' 'unsafe-eval' http://localhost:5173;
+      style-src 'self' 'unsafe-inline';
+      connect-src 'self' http://localhost:5225 ws://localhost:*;
+      img-src 'self' data:;
+      font-src 'self';
+    "
     />
     <meta name="theme-color" content="#ffffff" />
     <meta name="color-scheme" content="light dark" />

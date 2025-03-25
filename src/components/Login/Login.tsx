@@ -1,15 +1,21 @@
 import { Button, Checkbox, Group, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import React, { FormEvent, useState } from "react";
+import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import Register from "./Register";
 import userStore from "../../store/userStore";
 import { observer } from "mobx-react-lite";
+import { authApi } from "../../api";
+import { createNewAbortController } from "../../utils/createNewAbortController";
+import { handleError } from "../../utils/handleError";
 
 const Login = () => {
   const [isRegistered, setIsRegistered] = useState(true);
+  const abortControllerRef = useRef<AbortController>(null);
   const form = useForm({
     mode: "uncontrolled",
+    validateInputOnBlur: true, // Валидация при потере фокуса
+
     initialValues: {
       email: "",
       password: "",
@@ -23,10 +29,19 @@ const Login = () => {
     },
   });
 
-  const handleLoginSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const { email, password } = form.values;
-  };
+  // Этот колбек сработает ТОЛЬКО если валидация пройдена
+  const handleLoginSubmit = form.onSubmit(async (values) => {
+    const { controller, signal } = createNewAbortController(abortControllerRef);
+    abortControllerRef.current = controller;
+
+    try {
+      const { email, password } = values;
+      const user = await authApi.login(email, password, signal);
+      userStore.login(user);
+    } catch (error) {
+      handleError(error);
+    }
+  });
 
   if (userStore.isAuth) {
     return null;

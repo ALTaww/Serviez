@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { ColorSchemeIcons } from "../../templates";
 import styles from "./header.module.scss";
 import { paths } from "../../paths";
+import LogoutButton from "../../templates/LogoutButton";
 
 const Header = () => {
   return (
@@ -21,6 +22,7 @@ const Header = () => {
             </li>
           </ul>
         </nav>
+        <LogoutButton />
         <ColorSchemeIcons />
       </div>
     </header>

@@ -1,4 +1,5 @@
 import { $authHost } from ".";
+import { IUser } from "../types/database";
 
 class AuthApi {
   refreshTokens = async (signal?: AbortSignal) => {
@@ -6,7 +7,11 @@ class AuthApi {
     return data;
   };
 
-  login = async (email: string, password: string, signal: AbortSignal) => {
+  login = async (
+    email: string,
+    password: string,
+    signal: AbortSignal
+  ): Promise<IUser> => {
     const { data } = await $authHost.post(
       "/login",
       { email, password },
@@ -15,7 +20,7 @@ class AuthApi {
     return data;
   };
 
-  logout = async (signal: AbortSignal) => {
+  logout = async (signal: AbortSignal): Promise<{ success: true }> => {
     const { data } = await $authHost.post("/logout", {}, { signal });
     return data;
   };
@@ -28,12 +33,17 @@ class AuthApi {
       password,
     }: { name: string; surname: string; email: string; password: string },
     signal: AbortSignal
-  ) => {
+  ): Promise<IUser> => {
     const { data } = await $authHost.post(
       "/register",
       { name, surname, email, password },
       { signal }
     );
+    return data;
+  };
+
+  getMe = async (signal: AbortSignal): Promise<IUser> => {
+    const { data } = await $authHost.get("/me", { signal });
     return data;
   };
 

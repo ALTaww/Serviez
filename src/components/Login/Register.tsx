@@ -1,8 +1,15 @@
 import { Button, Checkbox, Group, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { FormEvent } from "react";
+import { FormEvent, useRef } from "react";
+import { createNewAbortController } from "../../utils/createNewAbortController";
+import { authApi } from "../../api";
+import userStore from "../../store/userStore";
+import { handleError } from "../../utils/handleError";
+import { observer } from "mobx-react-lite";
 
 const Register = () => {
+  const abortControllerRef = useRef<AbortController>(null);
+
   const form = useForm({
     mode: "uncontrolled",
     initialValues: {
@@ -24,11 +31,22 @@ const Register = () => {
     },
   });
 
-  const handleRegisterSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const { email, password, name, surname } = form.values;
-    console.log(email, password, name, surname);
-  };
+  // Этот колбек сработает ТОЛЬКО если валидация пройдена
+  const handleRegisterSubmit = form.onSubmit(async (values) => {
+    const { controller, signal } = createNewAbortController(abortControllerRef);
+    abortControllerRef.current = controller;
+
+    try {
+      const { name, surname, email, password } = values;
+      const user = await authApi.register(
+        { name, surname, email, password },
+        signal
+      );
+      userStore.login(user);
+    } catch (error) {
+      handleError(error);
+    }
+  });
 
   return (
     <form onSubmit={handleRegisterSubmit}>
@@ -74,4 +92,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default observer(Register);
