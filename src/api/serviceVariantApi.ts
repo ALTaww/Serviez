@@ -1,5 +1,6 @@
 import { $serviceVariantHost } from ".";
 import { IServiceVariant, IWorkingHours } from "../types/database";
+import { SERVICE_VARIANT_CREATE } from "../types/types";
 
 class ServiceVariantApi {
   create = async (
@@ -24,6 +25,19 @@ class ServiceVariantApi {
     const { data } = await $serviceVariantHost.post(
       `/${serviceId}/variants`,
       { variant, workingHours },
+      { signal }
+    );
+    return data;
+  };
+
+  createMultiple = async (
+    serviceId: string,
+    variants: SERVICE_VARIANT_CREATE[],
+    signal: AbortSignal
+  ): Promise<IServiceVariant> => {
+    const { data } = await $serviceVariantHost.post(
+      `/${serviceId}/variants/multiple`,
+      { variants },
       { signal }
     );
     return data;

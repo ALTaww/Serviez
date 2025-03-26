@@ -12,6 +12,7 @@ import { IService, IServiceVariant } from "../../types/database";
 import { serviceApi, serviceVariantApi } from "../../api";
 import { createNewAbortController } from "../../utils/createNewAbortController";
 import { SERVICE_VARIANT_CREATE } from "../../types/types";
+import { handleError } from "../../utils/handleError";
 
 const CreateServiceForm = () => {
   const [activeStep, setActiveStep] = useState(0);
@@ -90,32 +91,33 @@ const CreateServiceForm = () => {
     const { controller, signal } = createNewAbortController(abortControllerRef);
     abortControllerRef.current = controller;
 
-    if (activeStep === 0) {
-      const service = await serviceApi.createService(
-        serviceForm.getValues(),
-        signal
-      );
-      setServiceData(service);
-    } else if (activeStep === 1) {
-      if (variantForm.validate().hasErrors) return;
-
-      if (!serviceData) {
-        console.log("no serviceData saved in 1 step");
-        return;
-      }
-
-      console.log(variantsCreateData, variantsData);
-      // ТУТ НОРМАЛЬНО ОБРАБОТАТЬ СЕТТИНГ!!! (НЕ СЕТТИТЬ ВООБЩЕ, А СДЕЛАТЬ ОТДЕЛЬНЫЙ ЗАПРОС)
-      setVariantsCreateData((data) => [...data, variantForm.getValues()]);
-      for (let i = 0; i < variantsCreateData.length; i++) {
-        const variant = await serviceVariantApi.create(
-          serviceData._id,
-          variantsCreateData[i],
+    try {
+      if (activeStep === 0) {
+        const service = await serviceApi.createService(
+          serviceForm.getValues(),
           signal
         );
-        setVariantsData((data) => [...data, variant]);
+        setServiceData(service);
+      } else if (activeStep === 1) {
+        if (variantForm.validate().hasErrors) return;
+
+        if (!serviceData) {
+          console.log("no serviceData saved in 1 step");
+          return;
+        }
+
+        console.log(variantsCreateData, variantsData);
+        const createdVariants = await serviceVariantApi.createMultiple(
+          serviceData._id,
+          variantsCreateData,
+          signal
+        );
+        setVariantsData((data) => [...data, createdVariants]);
+        setVariantsCreateData([]);
+        variantForm.reset();
       }
-      setVariantsCreateData([]);
+    } catch (e) {
+      handleError(e);
     }
 
     setActiveStep((current) => {
@@ -127,12 +129,16 @@ const CreateServiceForm = () => {
     setActiveStep((current) => (current > 0 ? current - 1 : current));
 
   const addOneMoreVariant = () => {
+    if (!variantForm.isValid()) {
+      console.log("form isn't valid");
+    }
     setVariantsCreateData((data) => [...data, variantForm.getValues()]);
     variantForm.reset();
   };
 
   const removeVariant = () => {
-    variantForm.setValues(variantsCreateData[variantsCreateData.length - 1]);
+    if (variantsCreateData.length >= 1)
+      variantForm.setValues(variantsCreateData[variantsCreateData.length - 1]);
     setVariantsCreateData((data) => data.slice(0, -1));
   };
 
